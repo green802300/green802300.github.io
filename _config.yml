@@ -1,0 +1,83 @@
+# Site settings 配置站点
+title: "Green's HomePage"
+description: '这是一个初学博客的博主'
+keywords: 'Robot, Artificial Intelligence, Aviation, Software Safety'
+url: 'https://green802300.github.io' # your host
+
+# nav 中文字符空格：&emsp;
+nav: # 最佳体验 六个标签 且最好每个标签不超过4中文字
+  首页: '/'
+  标签: '/tags.html'
+  时间线: '/timeline.html'
+  关于博主: '/about.html'
+  友情链接: '/friendLink.html'
+
+# 博主
+author: true
+name: 'Green'
+NickName: 'Green'
+webtitle: "Green's HomePage"
+bio: 'Student of Beihang University'
+about: true
+aboutyou: '	北京航空航天大学在读硕士研究生，计划在自己的主页记录所学与所感，想到什么就写什么，希望能与屏幕前的你一同分享一同成长。'
+portraits: '/assets/profile.jpeg' # your portraits image file path
+
+# SNS
+SNS: true
+SNS-icon: #['Facebook', 'weibo', 'qq', 'github', 'Dribbble', 'Twitter', 'instagram', 'weixin', 'Codepen']
+  mail: 'mailto:green@buaa.edu.cn'
+  weixin: 'images/qrcode_weixin.jpg' # 你的微信二维码存放的地址
+  qq: 'images/qrcode_qq.jpg' 
+  github: 'https://github.com/green802300'
+  weibo: ''
+  zhihu: ''
+
+# 分页
+paginate: 3
+paginatepath: ['page:num']
+
+# since
+footer:
+  since: 2018
+
+# Markdown
+markdown: kramdown
+kramdown:
+  input: GFM
+# 代码高亮 使用rouge
+highlighter: rouge
+# 代码高亮主题使用pygments主题: autumn\ default\ emacs\ friendly\ manni\ murphy\ pastie\ perldoc\ tango 任选一个你喜欢的主题名称填在下面的单引号中
+pygmentsTheme: 'default'
+
+# 友情链接
+friends:
+  School: 'https://www.buaa.edu.cn'
+  James' HomePage: 'https://www.handsomechai.top/'
+
+# 评论 最佳体验 在disqus、livere和Gitment之间三选一
+# disqus 评论
+disqus: false
+disqus_url: '' # https://abc.disqus.com/embed.js
+# 来必力评论
+livere: true
+livere_uid: 'MTAyMC8zNDI2OS8xMDgwNg==' # MTAyMC8zNDI2OS8xMDgwNg==
+# Gitment评论 OAuth Application
+Gitment: false
+Gitment_owner: 'green802300'  # github用户名
+Gitment_repo: 'https://github.com/green802300/green802300.github.io'  # github博客存放的仓库名
+client_id: ''  # 注册 OAuth Application 后获得的 client_id
+client_secret: ''  # 注册 OAuth Application 后获得的 client_secret
+
+# Share : weibo, qq, wechat, tencent, douban, qzone, linkedin, diandian, facebook, twitter, google
+social-share: true
+social-share-items: ['qq', 'wechat', 'weibo', 'twitter', 'facebook']
+
+# 百度统计 在baidu-url里填写自己相关的url代码
+baidu: true
+baidu-url: ''
+# 谷歌分析 在google-ID里填写自己在谷歌分析获得的追踪ID
+google: false
+google-ID: ''
+
+# 博客头信息备选颜色（该部分在站点中不充当站点变量，将其写在post的头信息中用来充当页面变量）
+color: rgb(154,133,255) rgb(255,90,90) rgb(255,210,32) rgb(98,170,255)

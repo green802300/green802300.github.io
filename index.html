@@ -1,0 +1,18 @@
+---
+layout: default
+title: Green's HomePage
+page-title: Green's HomePage.
+home-title: 
+description: 你若盛开，清风自来
+---
+
+{% include header.html %}
+{% include boot.html %}
+<main>
+    {% include title.html %}
+    <ul class="post-list">
+      {% include posts_paginator.html %}
+    </ul>
+</main>
+{% include pageNav.html %}
+{% include footer.html %}

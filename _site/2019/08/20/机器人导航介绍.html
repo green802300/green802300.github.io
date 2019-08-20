@@ -1,0 +1,434 @@
+<!-- 博文的布局-Layout -->
+<!DOCTYPE html>
+<html>
+<head>
+<!-- 引入head标签 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-sclable=0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="description" content="这是一个初学博客的博主" />
+<meta name="keywords" content="Robot, Artificial Intelligence, Aviation, Software Safety" />
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/media.css">
+<link rel="stylesheet" href="/assets/css/animate.min.css">
+<link rel="stylesheet" href="/assets/css/pygments/pygments_default.css">
+<link rel="stylesheet" href="/assets/css/github-markdown.css">
+<!-- SNS-icon -->
+<script src="//at.alicdn.com/t/font_856428_y9z6nq7zf5.js"></script>
+<!-- share.css -->
+<link rel="stylesheet" href="/assets/css/share.min.css">
+<!-- font -->
+<link rel="stylesheet" href="/assets/css/font.css">
+<!-- <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Pacifico|Ubuntu|Roboto+Mono|Source+Sans+Pro" rel="stylesheet"> -->
+
+<!-- Favicon -->
+<link href="/assets/profile.jpeg" rel="shortcut icon" />
+<link href="/assets/profile.jpeg" rel="apple-touch-icon-precomposed" />
+<!-- Android Lolipop Theme Color -->
+<!-- <meta name="theme-color" content="#1464FB"> -->
+<title>1 机器人导航简介</title>
+<!-- 百度统计 -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<!-- 谷歌分析 -->
+
+
+<!-- Android Lolipop Theme Color -->
+<meta name="theme-color" content=" rgb(255,210,32) ">
+</head>
+<body>
+
+<!-- 顶部锚点 -->
+<a id="htmlup" name="htmlup"></a>
+<!-- 引入博文顶部选项 -->
+
+<header id="post-header" style="background-color:rgb(255,210,32);">
+  <div class="top-center">
+      <div class="logo">
+          <a href="/" title="my awesome webtitle" style="color: white;">Green's HomePage</a>
+      </div>
+      <nav class="top-nav">
+          <ul>
+              
+                <li><a href="/" style="color: white;">首页</a></li>
+              
+                <li><a href="/tags.html" style="color: white;">标签</a></li>
+              
+                <li><a href="/timeline.html" style="color: white;">时间线</a></li>
+              
+                <li><a href="/about.html" style="color: white;">关于博主</a></li>
+              
+                <li><a href="/friendLink.html" style="color: white;">友情链接</a></li>
+              
+          </ul>
+      </nav>
+      <div id="top-boot">
+        <a href="javascript:;" id="boot1" style="display:block;" onclick="document.getElementById('boot-area').style.display='block';document.getElementById('boot1').style.display='none';document.getElementById('boot2').style.display='block';"><img src="/assets/boot_white.png" alt=""></a>
+        <a href="javascript:;" id="boot2" style="display: none;" onclick="document.getElementById('boot-area').style.display='none';document.getElementById('boot1').style.display='block';document.getElementById('boot2').style.display='none';"><img src="/assets/boot_white.png" alt=""></a>
+      </div>
+  </div>
+
+</header>
+
+
+<!-- 引入移动下拉选项 -->
+<div id="boot-area">
+    <ul>
+        
+          <a href="/"><li>首页</li></a>
+        
+          <a href="/tags.html"><li>标签</li></a>
+        
+          <a href="/timeline.html"><li>时间线</li></a>
+        
+          <a href="/about.html"><li>关于博主</li></a>
+        
+          <a href="/friendLink.html"><li>友情链接</li></a>
+        
+    </ul>
+</div>
+
+<!-- 引入博文顶部样式 -->
+<!-- 版本一 垃圾 -->
+<!-- <div class="wow fadeIn top" data-wow-duration="3.5s" >
+    <span class="wow fadeInUp" data-wow-delay="0.2s">1 机器人导航简介</span>
+    <span class="wow fadeInUp" data-wow-delay="0.4s"></span>
+    <span class="wow fadeInUp" data-wow-delay="0.4s"></span>
+    <span class="wow fadeInUp" data-wow-delay="0.6s">作者&nbsp;&nbsp;|&nbsp;&nbsp;Green</span>
+</div> -->
+
+<!-- 版本二 可切换页面 -->
+
+<div class="post-top" style="background-color:rgb(255,210,32);">
+  <!-- 页面宽度大于800px -->
+  <div class="left-area">
+    
+      <a href="javascript:;" class="btn bounceInLeft animated" onmouseover="showLeft();this.style.color='rgb(255,210,32)';" onmouseout="goneLeft();this.style.color='rgba(0,0,0,.2)';"><</a>
+      <div id="left-tab" style="display:none;"><span class="left-san"></span><span class="left-main" style="color:rgb(255,210,32);"><sapn class="main">没有上一页咯</sapn></span></div>
+    
+  </div>
+  <div class="post-titlearea">
+    <span class="wow fadeInUp" data-wow-delay="0.2s">1 机器人导航简介</span>
+    <!-- <span class="wow fadeInUp" data-wow-delay="0.4s"></span> -->
+    <!-- <span class="wow fadeInUp" data-wow-delay="0.4s"></span> -->
+    <!-- <span class="wow fadeInUp" data-wow-delay="0.6s">作者&nbsp;&nbsp;|&nbsp;&nbsp;Green</span> -->
+  </div>
+  <div class="right-area">
+    
+      <a href="javascript:;" class="btn bounceInRight self-animated" onmouseover="showRight();this.style.color='rgb(255,210,32)';" onmouseout="goneRight();this.style.color='rgba(0,0,0,.2)';">></a>
+      <div id="right-tab" style="display:none;"><span class="right-san"></span><span class="right-main" style="color:rgb(255,210,32);"><sapn class="main">没有下一页咯</sapn></span></div>
+    
+  </div>
+
+  <!-- 页面宽度小于800px -->
+  <div class="post-changearea">
+    
+      <a href="javascript:;" class="leftchange" style="border-right: 1px solid rgb(255,210,32);border-bottom: 2px solid rgb(255,210,32);"><span><br>没有上一篇咯</span></a>
+    
+    
+      <a href="javascript:;" class="rightchange" style="border-left: 1px solid rgb(255,210,32);border-bottom: 2px solid rgb(255,210,32);"><span><br>没有下一篇咯</span></a>
+    
+  </div>
+</div>
+
+
+<div class="markdown-body fadeInUp animated">
+
+  
+
+  <!-- 文章内容 -->
+  <h1 id="机器人导航简介">机器人导航简介</h1>
+
+<p>  导航可以说是机器人最基本的功能之一，简单来说，导航就是机器人基于地图，实现从起始点前进到目标点的过程，这个过程中要求不发生碰撞并满足自身动力学模型（如不超过速度、加速度等限制）。</p>
+
+<div align="center">
+  <img src="什么是导航.png" width="60%" height="60%" />
+</div>
+
+<p>  将导航的任务进行细分，首先机器人在未知环境中需要使用激光传感器（或者是深度传感器）进行<strong>地图</strong>构建，然后根据构建的地图进行<strong>定位</strong>，有了地图和定位的基础，就可以根据目标点以及<strong>感知</strong>的障碍物信息进行<strong>路径规划</strong>了。我们可以将导航的要素归纳如下：</p>
+
+<ul>
+  <li>地图</li>
+  <li>定位</li>
+  <li>感知</li>
+  <li>路径规划。</li>
+</ul>
+
+<div align="center">
+  <img src="导航元素.png" width="60%" height="60%" />
+</div>
+
+<h2 id="地图">地图</h2>
+
+<p>  下面这张图是ROS中的一个地图，其实也就是一张普通的灰度图像。图像上的黑色像素表示障碍物，白色像素表示可行区域，灰色是未探索的区域。</p>
+
+<div align="center">
+  <img src="地图示例.png" width="30%" height="30%" />
+</div>
+
+<p>  一般来说，地图是通过<a href="https://baike.baidu.com/item/SLAM/7661974?fr=aladdin">SLAM</a>(同时定位与建图)来构建的，这里就不展开了。</p>
+
+<h2 id="定位">定位</h2>
+
+<p>  定位是对机器人位置和姿态（一般简称位姿）的测量或估计，简单来说，通过定位，机器人可以知道自己在哪儿以及所面朝的方向。</p>
+
+<div align="center">
+  <img src="定位.png" width="60%" height="60%" />
+</div>
+
+<h2 id="感知">感知</h2>
+
+<p>  机器人是通过传感器来感知周围环境的。下面三个图是机器人常用的传感器，从左至右分别是超声波传感器，激光雷达，深度摄像头（与传统的摄像头区别在于加入了深度信息，可以测量像素点距离摄像头的距离）。</p>
+
+<div align="center">
+  <img src="传感器.png" width="75%" height="75%" />
+</div>
+
+<p>  通过这些传感器的数据，就可以对墙壁、路障等障碍物进行感知识别。</p>
+
+<h1 id="ros导航框架">ROS导航框架</h1>
+
+<p>  这是<a href="http://wiki.ros.org/move_base">ROS wiki</a>上的一张图，介绍了ROS导航的整体工作框架：</p>
+
+<figure align="center">
+  <img src="导航框架.png" width="90%" height="90%" />
+</figure>
+
+<p>  白色是已经提供给你的节点，灰色是可选的，蓝色是根据平台的差异而不同的节点。</p>
+
+<p>  首先，navigation框架里面的核心是中间的<strong>move_base</strong>，这是导航最重要的一个package，它负责运动规划，这里面有<strong>global planner</strong>和<strong>local planner</strong>，把路径规划问题分解为全局和局部两部分来解决，而这两个planner做出决策，要参考全局和局部的<strong>costmap</strong>代价地图。然后move_base还包括了一些<strong>recovery behaviors</strong>，让机器人在某些情况下，比如说碰到障碍物，卡住，会采取一些恢复措施。</p>
+
+<p>  我们先把move_base看成一个整体进行一定程度的简化，如下图所示。可以认为move_base就是一个路径规划的工具，然后分析move_base需要什么输入，然后它能输出给我们什么数据。</p>
+
+<figure align="center">
+  <img src="简化导航框架.png" width="75%" height="75%" />
+</figure>
+
+<p>  有这么几个数据是必须给的，一个是TransForms(tf)，路径规划当然得知道各个坐标系的变换关系了，尤其是当前机器人在地图的什么位置。那其中必不可少的是map-&gt;odom-&gt;base之间的tf，还有base到其他各个机器人零部件的tf。</p>
+
+<p>  还有就是Odemetry(odem)的数据，刚才tf只提供了位置和方向信息，但是实际路径规划，还要考虑速度和角速度，所以这里专门有一个odom来提供位置方向、线速度、角速度。这个odom注意，是一个topic，不是tf里的odom frame。类似的还有map，既是tf里的frame，也是一个topic。</p>
+
+<p>  除了odom之外，还有一个Laser，可以是激光雷达，可以是深度摄像头的点云，主要是用来帮助构建costmap，实现避障。</p>
+
+<p>  所以你需要提供的数据，通常来说就是这么几个，/map，/tf， /scan， /odom，以及目标点的信息。</p>
+
+<p>  那navigation 输出什么呢？很简单，输出的就是路径规划算出来的当前速度，/cmd_vel。</p>
+
+<h2 id="navigation-stack">Navigation Stack</h2>
+
+<p>Navigation Stack是一个ROS的功能包集，里面包含了ROS在路径规划、定位、地图、异常行为恢复等方面的package，如下表所示。这么多package，你可能会觉得很乱，不过不用担心，在使用中其实还是比较简单的。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>包名</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>amcl</td>
+      <td>定位</td>
+    </tr>
+    <tr>
+      <td>Fake_localization</td>
+      <td>定位</td>
+    </tr>
+    <tr>
+      <td>map_server</td>
+      <td>提供地图</td>
+    </tr>
+    <tr>
+      <td>move_base</td>
+      <td>路径规划节点</td>
+    </tr>
+    <tr>
+      <td>nav_core</td>
+      <td>路径规划接口类</td>
+    </tr>
+    <tr>
+      <td>base_local _planner</td>
+      <td>实现了Trajectory Rollout和DWA两种局部规划算法</td>
+    </tr>
+    <tr>
+      <td>dwa_local _planner</td>
+      <td>重新实现了DWA局部规划算法</td>
+    </tr>
+    <tr>
+      <td>parrot_planner</td>
+      <td>实现了较简单的全局规划算法</td>
+    </tr>
+    <tr>
+      <td>navfn</td>
+      <td>实现了Dijkstra和A*全局规划算法</td>
+    </tr>
+    <tr>
+      <td>global_planner</td>
+      <td>重新实现了Dijkstra和A*全局规划算法</td>
+    </tr>
+    <tr>
+      <td>clear_costmap _recovery</td>
+      <td>实现了清除代价地图的恢复行为</td>
+    </tr>
+    <tr>
+      <td>rotate_recovery</td>
+      <td>实现了旋转的恢复行为</td>
+    </tr>
+    <tr>
+      <td>move_slow _ and_clear</td>
+      <td>路径规划接口类</td>
+    </tr>
+    <tr>
+      <td>costmap_2d</td>
+      <td>二维代价地图</td>
+    </tr>
+    <tr>
+      <td>voxel_grid</td>
+      <td>三维小方块</td>
+    </tr>
+    <tr>
+      <td>robot_pose _ekf</td>
+      <td>机器人位姿的卡尔曼滤波</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="参考资料">参考资料</h2>
+
+<p>[1] http://wiki.ros.org/move_base</p>
+
+<p>[2] http://wiki.ros.org/navigation</p>
+
+
+  <!-- 引入share模块 -->
+  
+  <div class="social-share-wrapper">
+    <div class="social-share"></div>
+  </div>
+
+
+<!-- share.js -->
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+  socialShare('.social-share', {
+    sites: [
+      
+        'qq'
+        ,
+        
+      
+        'wechat'
+        ,
+        
+      
+        'weibo'
+        ,
+        
+      
+        'twitter'
+        ,
+        
+      
+        'facebook'
+        
+      
+    ],
+    wechatQrcodeTitle: "分享到微信朋友圈",
+    wechatQrcodeHelper: '期待在朋友圈见到这篇文章'
+  });
+</script>
+
+</div>
+
+<!-- 底部锚点 -->
+<a id="htmldown" name="htmldown"></a>
+<!-- 引入评论模块 -->
+
+
+
+    <section class="post-footer-item comment">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDI2OS8xMDgwNg=="></div>
+    </section>
+
+    <!-- 来必力City版安装代码 -->
+    <script type="text/javascript">
+       (function(d, s) {
+           var j, e = d.getElementsByTagName(s)[0];
+
+           if (typeof LivereTower === 'function') { return; }
+
+           j = d.createElement(s);
+           j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+           j.async = true;
+
+           e.parentNode.insertBefore(j, e);
+       })(document, 'script');
+    </script>
+    <noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+    <!-- City版安装代码已完成 -->
+
+
+
+
+
+<!-- 引入goto模块 -->
+<div class="bounceInRight animated go">
+  <a title="顶部切换页面" class="gototop" href="#htmlup" target="_self">
+    <div class="box" style="font-family:'ffad_matroregular';">
+        Top
+    </div>
+  </a>
+  <a title="底部有livere评论哦" class="gotobottom" href="#htmldown" target="_self">
+    <div class="box" style="font-family:'ffad_matroregular';">
+        Foot
+    </div>
+  </a>
+</div>
+
+<!-- 引入页面底部模块 -->
+<footer id="bottom">
+  <br>
+  <span>Green's HomePage ©
+  
+  
+    2018
+    -
+  
+  2019
+  <br>
+  Powered by <a href="https://www.jekyll.com.cn/">Jekyll</a> | <a href="https://github.com/xukimseven/HardCandy-Jekyll">HardCandy-Jekyll</a></span>
+</footer>
+
+
+<!-- 引用wow.js的动画效果 -->
+<script src="/assets/js/wow.js"></script>
+<script>
+    var wow = new WOW({
+        boxClass: 'wow',
+        animateClass: 'animated',
+        // offset: 600,
+        mobile: true,
+        live: true
+    });
+    wow.init();
+</script>
+<!-- 页面刷新回到顶部 -->
+<script>
+    window.onbeforeunload = function(){
+        //刷新后页面自动回到顶部
+        document.documentElement.scrollTop = 0;  //ie下
+        document.body.scrollTop = 0;  //非ie
+    }
+</script>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>
