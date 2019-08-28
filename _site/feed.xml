@@ -1,4 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-08-20T21:25:12+08:00</updated><id>http://localhost:4000/</id><title type="html">Green’s HomePage</title><subtitle>这是一个初学博客的博主</subtitle><author><name>true</name></author><entry><title type="html">1 机器人导航简介</title><link href="http://localhost:4000/2019/08/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%BB%8B%E7%BB%8D.html" rel="alternate" type="text/html" title="1 机器人导航简介" /><published>2019-08-20T00:00:00+08:00</published><updated>2019-08-20T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%BB%8B%E7%BB%8D</id><content type="html" xml:base="http://localhost:4000/2019/08/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%BB%8B%E7%BB%8D.html">&lt;h1 id=&quot;机器人导航简介&quot;&gt;机器人导航简介&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-08-28T17:12:26+08:00</updated><id>http://localhost:4000/</id><title type="html">Green’s HomePage</title><subtitle>这是一个初学博客的博主</subtitle><author><name>true</name></author><entry><title type="html">2 机器人导航 move_base</title><link href="http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base.html" rel="alternate" type="text/html" title="2 机器人导航 move_base" /><published>2019-08-28T00:00:00+08:00</published><updated>2019-08-28T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base</id><content type="html" xml:base="http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base.html">&lt;h1 id=&quot;move_base&quot;&gt;move_base&lt;/h1&gt;
+
+&lt;p&gt;  move_base节点位于导航框架正中心，可以理解为一个强大的路径规划器，在实际的导航任务中，只需要启动这一个node，并且给他提供数据，就可以规划出路径和速度。在navigation这个问题的角度，map是作为已知信息，默认是已经解决的。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;框架.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;  下图表示了move_base的组成部分。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;组成.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;  中间这个节点就是move_base，它要正常工作，首先需要设置好三个接口，分别叫做&lt;strong&gt;Base Local Planner&lt;/strong&gt;、&lt;strong&gt;Base Global Planner&lt;/strong&gt;、&lt;strong&gt;Recovery Behavior&lt;/strong&gt;， 在ROS里，实际的路径规划一般就是分为这么三部分。&lt;/p&gt;
+
+&lt;p&gt;  &lt;strong&gt;Base Local Planner&lt;/strong&gt;是全局规划，负责轨迹的大方向，用来躲避静态障碍物。&lt;strong&gt;Base Global Planner&lt;/strong&gt;是局部路径规划，负责具体的运动细节，用来躲避移动中的障碍物，也就是动态避障。&lt;/p&gt;
+
+&lt;p&gt;  做好了这两部分路径规划，机器人就可以正常的运动了，但有些时候，机器人也会陷入一些运动情况，比如碰撞到障碍物，那它就会有一些恢复动作，&lt;strong&gt;Recovery Behavior&lt;/strong&gt;就属于异常动作处理的方法。&lt;/p&gt;
+
+&lt;p&gt;  针对这三个接口，每一个ROS都给我们提供了一些插件，供用户来选择。比如局部路径规划，ROS提供了两个插件，这每一个插件，都是不同算法的实现，dwa_local_planner就是base_local_planner的重写版本，对动态窗口的速度采样更好，其实就是不同的package，在navigation metapackage你都能找到这些package。&lt;/p&gt;
+
+&lt;p&gt;  我们可以看出，move_base是navigation的逻辑核心，是核心节点，之所以称之为核心，是因为它在导航的任务中 处于支配地位，其他的一些package都是它的插件。&lt;/p&gt;
+
+&lt;h2 id=&quot;base_local-_planner插件&quot;&gt;base_local _planner插件&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;base_local_planner实现了Trajectory Rollout和DWA两种局部规划算法&lt;/li&gt;
+  &lt;li&gt;dwa_local_planner可以看作是base_local_planner的改进版&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;base_global-_planner插件&quot;&gt;base_global _planner插件&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;parrot_planner实现了较简单的全局规划算法&lt;/li&gt;
+  &lt;li&gt;Navfn实现了Dijkstra和A*全局规划算法&lt;/li&gt;
+  &lt;li&gt;global_planner可以看作navfn的改进版&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;recovery_behavior插件&quot;&gt;recovery_behavior插件&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;clear_costmap_recovery实现了清楚代价地图的恢复行为&lt;/li&gt;
+  &lt;li&gt;rotate_recovery实现了旋转的恢复行为&lt;/li&gt;
+  &lt;li&gt;move_slow_and_clear实现了缓慢移动的恢复行为&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;  需要说明一下，这里插件的概念并不是我们抽象的描述，而是在ROS里catkin编译系统能够认出的，也就是说插件不需要提前链接到ROS的程序上，只需在运行时加载插件就可以调用其中的功能。&lt;/p&gt;
+
+&lt;h2 id=&quot;nav_core&quot;&gt;nav_core&lt;/h2&gt;
+
+&lt;p&gt;  nav_core这个package定义了这三个接口，其实就是定义了三个接口类，然后各自继承和实现了这些功能。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;nav_core.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;BaseGlobalPlanner是全局导航的接口，规定一个功能函数makePlan，给定起始跟目标，输出路径(一系列pose)走过去；&lt;/li&gt;
+  &lt;li&gt;BaseLocalPlanner规定了一个核心函数computeVelocityCommands，就是计算局部地图内的下一步控制指令(线速度，角速度)；&lt;/li&gt;
+  &lt;li&gt;RecoveryBehavior，规定一个runBehavior，在小车卡住情况下执行运动恢复，回到正常的导航状态。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;  在ROS navigation中，move_base提供的是框架，通过对nav_core中规定的planner与 recovery_behavior的基类的接口进行调用来实现。这样做可以将框架与具体的实现方法隔离开来。而具体采用的方法由pluginlib 根据不同参数导入，这样的实现方法使得navigation的可定制性大大增加。&lt;/p&gt;</content><author><name>Green</name></author><category term="navigation" /><summary type="html">move_base   move_base节点位于导航框架正中心，可以理解为一个强大的路径规划器，在实际的导航任务中，只需要启动这一个node，并且给他提供数据，就可以规划出路径和速度。在navigation这个问题的角度，map是作为已知信息，默认是已经解决的。   下图表示了move_base的组成部分。   中间这个节点就是move_base，它要正常工作，首先需要设置好三个接口，分别叫做Base Local Planner、Base Global Planner、Recovery Behavior， 在ROS里，实际的路径规划一般就是分为这么三部分。   Base Local Planner是全局规划，负责轨迹的大方向，用来躲避静态障碍物。Base Global Planner是局部路径规划，负责具体的运动细节，用来躲避移动中的障碍物，也就是动态避障。   做好了这两部分路径规划，机器人就可以正常的运动了，但有些时候，机器人也会陷入一些运动情况，比如碰撞到障碍物，那它就会有一些恢复动作，Recovery Behavior就属于异常动作处理的方法。   针对这三个接口，每一个ROS都给我们提供了一些插件，供用户来选择。比如局部路径规划，ROS提供了两个插件，这每一个插件，都是不同算法的实现，dwa_local_planner就是base_local_planner的重写版本，对动态窗口的速度采样更好，其实就是不同的package，在navigation metapackage你都能找到这些package。   我们可以看出，move_base是navigation的逻辑核心，是核心节点，之所以称之为核心，是因为它在导航的任务中 处于支配地位，其他的一些package都是它的插件。 base_local _planner插件 base_local_planner实现了Trajectory Rollout和DWA两种局部规划算法 dwa_local_planner可以看作是base_local_planner的改进版 base_global _planner插件 parrot_planner实现了较简单的全局规划算法 Navfn实现了Dijkstra和A*全局规划算法 global_planner可以看作navfn的改进版 recovery_behavior插件 clear_costmap_recovery实现了清楚代价地图的恢复行为 rotate_recovery实现了旋转的恢复行为 move_slow_and_clear实现了缓慢移动的恢复行为   需要说明一下，这里插件的概念并不是我们抽象的描述，而是在ROS里catkin编译系统能够认出的，也就是说插件不需要提前链接到ROS的程序上，只需在运行时加载插件就可以调用其中的功能。 nav_core   nav_core这个package定义了这三个接口，其实就是定义了三个接口类，然后各自继承和实现了这些功能。 BaseGlobalPlanner是全局导航的接口，规定一个功能函数makePlan，给定起始跟目标，输出路径(一系列pose)走过去； BaseLocalPlanner规定了一个核心函数computeVelocityCommands，就是计算局部地图内的下一步控制指令(线速度，角速度)； RecoveryBehavior，规定一个runBehavior，在小车卡住情况下执行运动恢复，回到正常的导航状态。   在ROS navigation中，move_base提供的是框架，通过对nav_core中规定的planner与 recovery_behavior的基类的接口进行调用来实现。这样做可以将框架与具体的实现方法隔离开来。而具体采用的方法由pluginlib 根据不同参数导入，这样的实现方法使得navigation的可定制性大大增加。</summary></entry><entry><title type="html">1 机器人导航 简介</title><link href="http://localhost:4000/2019/08/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%BB%8B%E7%BB%8D.html" rel="alternate" type="text/html" title="1 机器人导航 简介" /><published>2019-08-20T00:00:00+08:00</published><updated>2019-08-20T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%BB%8B%E7%BB%8D</id><content type="html" xml:base="http://localhost:4000/2019/08/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%BB%8B%E7%BB%8D.html">&lt;h1 id=&quot;机器人导航简介&quot;&gt;机器人导航简介&lt;/h1&gt;
 
 &lt;p&gt;  导航可以说是机器人最基本的功能之一，简单来说，导航就是机器人基于地图，实现从起始点前进到目标点的过程，这个过程中要求不发生碰撞并满足自身动力学模型（如不超过速度、加速度等限制）。&lt;/p&gt;
 
