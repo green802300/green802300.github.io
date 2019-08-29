@@ -1,4 +1,271 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-08-28T17:12:26+08:00</updated><id>http://localhost:4000/</id><title type="html">Green’s HomePage</title><subtitle>这是一个初学博客的博主</subtitle><author><name>true</name></author><entry><title type="html">2 机器人导航 move_base</title><link href="http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base.html" rel="alternate" type="text/html" title="2 机器人导航 move_base" /><published>2019-08-28T00:00:00+08:00</published><updated>2019-08-28T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base</id><content type="html" xml:base="http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base.html">&lt;h1 id=&quot;move_base&quot;&gt;move_base&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-08-29T16:25:30+08:00</updated><id>http://localhost:4000/</id><title type="html">Green’s HomePage</title><subtitle>这是一个初学博客的博主</subtitle><author><name>true</name></author><entry><title type="html">3 机器人导航 global_planner</title><link href="http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html" rel="alternate" type="text/html" title="3 机器人导航 global_planner" /><published>2019-08-29T00:00:00+08:00</published><updated>2019-08-29T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner</id><content type="html" xml:base="http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html">&lt;h1 id=&quot;global-planner&quot;&gt;global planner&lt;/h1&gt;
+
+&lt;p&gt;  在对move_base中的全局规划进行介绍之前，我们先来回顾一下Navigation的框架，可以看出位于红框中的global_planner是move_base节点的一部分，输入是目标位置以及global_costmap的信息，输出是全局的规划路径，作为local_planner的输入。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;框架.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;  在ROS的导航中，首先会通过全局路径规划，计算出机器人到目标位置的全局路线。全局路径规划一般是由navfn或global_planner插件实现的。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;navfn&lt;/strong&gt;
+通过Dijkstra最优路径的算法，计算costmap上的最小花费路径，作为机器人的全局路线。在算法上还有A*算法。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;navfn.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;global_planner&lt;/strong&gt;
+根据给定的目标位置进行总体路径的规划；这个package为导航提供了一种快速，内插值的全局规划器， 继承了nav_core包中nav_core::BaseGlobalPlanner接口，该实现相比navfn使用更加灵活。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;g_b.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;路径规划算法&quot;&gt;路径规划算法&lt;/h2&gt;
+
+&lt;p&gt;  路径规划是指的是机器人的最优路径规划问题，即依据某个或某些优化准则（如工作代价最小、行走路径最短、行走时间最短等），在工作空间中找到一个从起始位置到目标位置能避开障碍物的最优路径。&lt;/p&gt;
+
+&lt;p&gt;  路径规划的方法主要可以分为以下五类，global_planner主要用到的就是第二类基于节点的方法。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;路径规划算法概况.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;h3 id=&quot;dijkstra算法&quot;&gt;Dijkstra算法&lt;/h3&gt;
+
+&lt;p&gt;  迪杰斯特拉（Dijkstra）算法是典型的用来解决最短路径的算法，也是很多教程中的范例，由荷兰计算机科学家狄克斯特拉于1959年提出，用来求得从起始点到其他所有点最短路径。该算法采用了贪心的思想。&lt;/p&gt;
+
+&lt;p&gt;  下面结合实例来看一下。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d1.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;s是start顶点，t是terminal顶点，要求出s到t的最短路径。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d2.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先我们初始化了两个集合，S集合是已计算出最短路径的顶点集合，PQ是未计算出最短路径的顶点的集合。
+顶点附近的绿色数字表示从源节点到当前节点的距离，若二者没有直接相连，则为无穷大（∞）。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d3.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;从PQ的所有顶点中，选择距离值最小的顶点放入集合S中。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d4.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先将起始点s放入集合S中，然后将距离进行更新，可见图中2、6、7顶点的距离值发生了变化。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d5.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时PQ集合中距离值最小的顶点是2号顶点。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d6.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时将2号顶点放入集合S中，同时记录其父顶点为S。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d7.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;然后将距离值进行更新。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d8.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时PQ中6号顶点距离值最小。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d9.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;将6号顶点加入集合S，同时，PQ中的5号和3号顶点距离值进行了更新。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d10.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时，PQ中7号顶点的距离值最小。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d11.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;7号顶点加入集合S，同时5号和t顶点距离值更新。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d12.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时，PQ中3号顶点的距离值最小。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d13.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;3号顶点加入集合S，同时5号和t顶点距离值更新。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d14.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时，PQ中5号顶点的距离值最小。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d15.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;5号顶点加入集合S，同时4号和t顶点距离值更新。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d16.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时，PQ中4号顶点的距离值最小。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d17.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;4号顶点加入集合S，此时t的距离值由于未减小，因此没有发生变化。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d18.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;此时仅剩最后一个t顶点。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d19.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;t顶点加入集合S。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;d20.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;实际上，我们可以得到起始点s到各个顶点的最短距离：2(9),3(32),4(45),5(34),6(14),7(15),t(50) 。
+从起始点s到目标点t的最短路径为s-&amp;gt;6-&amp;gt;3-&amp;gt;5-&amp;gt;t。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;  总结一下&lt;strong&gt;算法流程&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;初始化时，S只含有源节点s；&lt;/li&gt;
+  &lt;li&gt;从PQ中选取一个距离s最小的顶点k加入S中（该选定的距离就是s到k的最短路径长度）；&lt;/li&gt;
+  &lt;li&gt;以k为新考虑的中间点，修改PQ中各顶点的距离；若从源节点s到顶点u的距离（经过顶点k）比原来距离（不经过顶点k）短，则修改顶点u的距离值，修改后的距离值是顶点k的距离加上k到u的距离；&lt;/li&gt;
+  &lt;li&gt;重复步骤2和3，直到所有顶点都包含在S中。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;a算法&quot;&gt;A*算法&lt;/h3&gt;
+
+&lt;p&gt;  同样地，我们结合实例来看一下A*算法是如何实现的。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;a1.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;绿色方格是我们的起始点，红色方格是我们的目标点，蓝色表示障碍物，我们需要寻找起始点到目标点的
+路径。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;a2.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;首先，将图中的搜索区域用二维数组表示，数组的每一项代表一个格子，它的状态分为可走 (walkalbe) 
+和不可走 (unwalkable) 。
+
+我们还需要初始化Open List和Close List，Open List用于存放路径规划过程中待检测的格子，而
+Close List用于存放已检测过的格子。我们先将起始点A(1,2)放入Closed List，然后把相邻的可走的 
+方格加入到 Open List 中，然后把起点 A 设置为这些方格的父节点，方便路径追踪。
+
+我们引入一个计算公式：F = G + H。其中G代表的是从起始节点沿着已生成的路径到指定待检测格子的
+移动开销。H指待测格子到目标节点的估计移动开销，也称为启发项。假设横向或纵向移动的开销G是10，
+沿对角线移动的开销是14，H是当前方格到目标方格的横向或纵向移动开销之和。
+
+因为Open List中方格(2,2)的F值最小，因此将(2,2)加入Closed List并作为当前要处理的节点。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;a3.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(2,2)的8个相邻方格中，有3个是障碍物，1个是在Close List中，忽略这几个方格。
+
+剩下的4个方格都是在Open List中的方格，因此检查经由(2,2)到这4个方格的路径是否更好，用G来衡量，
+比如原来从(1,2)到(2,3)的G为14，若从(1,2)先经过(2,2)再到(2,3)，则G变为20，显然还不如原来的路
+径，对于其它3个方格亦是如此。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;a4.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;将(2,1)加入Close List，其相邻的8个方格中，2个障碍物的方格和障碍物下的方格(3,0)认为不可达，
+(1,2)和(2,2)在Close List中不做处理，Open List中的(1,1)没有优化原来的路径。
+
+(1,0)和(2,0)加入Open List，并将父节点设置为(2,1)，分别计算F、G、H值。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;a5.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;以此类推，直到目标方格B加入Open List。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;a6.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;从目标方格B开始沿着父节点移动到起始方格A，就是求得的路径：
+(5,2)-&amp;gt;(5,1)-&amp;gt;(4,0)-&amp;gt;(3,0)-&amp;gt;(2,0)-&amp;gt;(2,1)-&amp;gt;(1,2)。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;对比&quot;&gt;对比&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Dijkstra 算法&lt;/strong&gt;需要载入全部数据进行全局遍历，确保运算结果一定是最短路径。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;A*算法&lt;/strong&gt;的核心思想在于设置的代价函数F=H+G，来寻找距离start和goal代价距离和F最少的点。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+&lt;p&gt;[1] https://blog.csdn.net/heroacool/article/details/51014824&lt;/p&gt;
+
+&lt;p&gt;[2] https://blog.csdn.net/weixin_44489823/article/details/89382502&lt;/p&gt;</content><author><name>Green</name></author><category term="navigation" /><summary type="html">global planner   在对move_base中的全局规划进行介绍之前，我们先来回顾一下Navigation的框架，可以看出位于红框中的global_planner是move_base节点的一部分，输入是目标位置以及global_costmap的信息，输出是全局的规划路径，作为local_planner的输入。   在ROS的导航中，首先会通过全局路径规划，计算出机器人到目标位置的全局路线。全局路径规划一般是由navfn或global_planner插件实现的。 navfn 通过Dijkstra最优路径的算法，计算costmap上的最小花费路径，作为机器人的全局路线。在算法上还有A*算法。 global_planner 根据给定的目标位置进行总体路径的规划；这个package为导航提供了一种快速，内插值的全局规划器， 继承了nav_core包中nav_core::BaseGlobalPlanner接口，该实现相比navfn使用更加灵活。 路径规划算法   路径规划是指的是机器人的最优路径规划问题，即依据某个或某些优化准则（如工作代价最小、行走路径最短、行走时间最短等），在工作空间中找到一个从起始位置到目标位置能避开障碍物的最优路径。   路径规划的方法主要可以分为以下五类，global_planner主要用到的就是第二类基于节点的方法。 Dijkstra算法   迪杰斯特拉（Dijkstra）算法是典型的用来解决最短路径的算法，也是很多教程中的范例，由荷兰计算机科学家狄克斯特拉于1959年提出，用来求得从起始点到其他所有点最短路径。该算法采用了贪心的思想。   下面结合实例来看一下。 s是start顶点，t是terminal顶点，要求出s到t的最短路径。 首先我们初始化了两个集合，S集合是已计算出最短路径的顶点集合，PQ是未计算出最短路径的顶点的集合。 顶点附近的绿色数字表示从源节点到当前节点的距离，若二者没有直接相连，则为无穷大（∞）。 从PQ的所有顶点中，选择距离值最小的顶点放入集合S中。 首先将起始点s放入集合S中，然后将距离进行更新，可见图中2、6、7顶点的距离值发生了变化。 此时PQ集合中距离值最小的顶点是2号顶点。 此时将2号顶点放入集合S中，同时记录其父顶点为S。 然后将距离值进行更新。 此时PQ中6号顶点距离值最小。 将6号顶点加入集合S，同时，PQ中的5号和3号顶点距离值进行了更新。 此时，PQ中7号顶点的距离值最小。 7号顶点加入集合S，同时5号和t顶点距离值更新。 此时，PQ中3号顶点的距离值最小。 3号顶点加入集合S，同时5号和t顶点距离值更新。 此时，PQ中5号顶点的距离值最小。 5号顶点加入集合S，同时4号和t顶点距离值更新。 此时，PQ中4号顶点的距离值最小。 4号顶点加入集合S，此时t的距离值由于未减小，因此没有发生变化。 此时仅剩最后一个t顶点。 t顶点加入集合S。 实际上，我们可以得到起始点s到各个顶点的最短距离：2(9),3(32),4(45),5(34),6(14),7(15),t(50) 。 从起始点s到目标点t的最短路径为s-&amp;gt;6-&amp;gt;3-&amp;gt;5-&amp;gt;t。   总结一下算法流程： 初始化时，S只含有源节点s； 从PQ中选取一个距离s最小的顶点k加入S中（该选定的距离就是s到k的最短路径长度）； 以k为新考虑的中间点，修改PQ中各顶点的距离；若从源节点s到顶点u的距离（经过顶点k）比原来距离（不经过顶点k）短，则修改顶点u的距离值，修改后的距离值是顶点k的距离加上k到u的距离； 重复步骤2和3，直到所有顶点都包含在S中。 A*算法   同样地，我们结合实例来看一下A*算法是如何实现的。 绿色方格是我们的起始点，红色方格是我们的目标点，蓝色表示障碍物，我们需要寻找起始点到目标点的 路径。 首先，将图中的搜索区域用二维数组表示，数组的每一项代表一个格子，它的状态分为可走 (walkalbe)  和不可走 (unwalkable) 。 我们还需要初始化Open List和Close List，Open List用于存放路径规划过程中待检测的格子，而 Close List用于存放已检测过的格子。我们先将起始点A(1,2)放入Closed List，然后把相邻的可走的  方格加入到 Open List 中，然后把起点 A 设置为这些方格的父节点，方便路径追踪。 我们引入一个计算公式：F = G + H。其中G代表的是从起始节点沿着已生成的路径到指定待检测格子的 移动开销。H指待测格子到目标节点的估计移动开销，也称为启发项。假设横向或纵向移动的开销G是10， 沿对角线移动的开销是14，H是当前方格到目标方格的横向或纵向移动开销之和。 因为Open List中方格(2,2)的F值最小，因此将(2,2)加入Closed List并作为当前要处理的节点。 (2,2)的8个相邻方格中，有3个是障碍物，1个是在Close List中，忽略这几个方格。 剩下的4个方格都是在Open List中的方格，因此检查经由(2,2)到这4个方格的路径是否更好，用G来衡量， 比如原来从(1,2)到(2,3)的G为14，若从(1,2)先经过(2,2)再到(2,3)，则G变为20，显然还不如原来的路 径，对于其它3个方格亦是如此。 将(2,1)加入Close List，其相邻的8个方格中，2个障碍物的方格和障碍物下的方格(3,0)认为不可达， (1,2)和(2,2)在Close List中不做处理，Open List中的(1,1)没有优化原来的路径。 (1,0)和(2,0)加入Open List，并将父节点设置为(2,1)，分别计算F、G、H值。 以此类推，直到目标方格B加入Open List。 从目标方格B开始沿着父节点移动到起始方格A，就是求得的路径： (5,2)-&amp;gt;(5,1)-&amp;gt;(4,0)-&amp;gt;(3,0)-&amp;gt;(2,0)-&amp;gt;(2,1)-&amp;gt;(1,2)。 对比 Dijkstra 算法需要载入全部数据进行全局遍历，确保运算结果一定是最短路径。 A*算法的核心思想在于设置的代价函数F=H+G，来寻找距离start和goal代价距离和F最少的点。 参考资料 [1] https://blog.csdn.net/heroacool/article/details/51014824 [2] https://blog.csdn.net/weixin_44489823/article/details/89382502</summary></entry><entry><title type="html">2 机器人导航 move_base</title><link href="http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base.html" rel="alternate" type="text/html" title="2 机器人导航 move_base" /><published>2019-08-28T00:00:00+08:00</published><updated>2019-08-28T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base</id><content type="html" xml:base="http://localhost:4000/2019/08/28/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bmove_base.html">&lt;h1 id=&quot;move_base&quot;&gt;move_base&lt;/h1&gt;
 
 &lt;p&gt;  move_base节点位于导航框架正中心，可以理解为一个强大的路径规划器，在实际的导航任务中，只需要启动这一个node，并且给他提供数据，就可以规划出路径和速度。在navigation这个问题的角度，map是作为已知信息，默认是已经解决的。&lt;/p&gt;
 
