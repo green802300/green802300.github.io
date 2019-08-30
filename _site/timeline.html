@@ -41,6 +41,25 @@ var _hmt = _hmt || [];
 
 <!-- 谷歌分析 -->
 
+<script type="text/x-mathjax-config">
+var mathId = document.getElementById("post-content"); //选择公式识别范围
+MathJax.Hub.Config({
+    showProcessingMessages: false, //关闭js加载过程信息
+    messageStyle: "none", //不显示信息
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ], //行内公式选择$
+        displayMath: [ ["$$","$$"] ], //段内公式选择$$
+    },
+    "HTML-CSS": {
+        availableFonts: ["STIX","TeX"], //可选字体
+        showMathMenu: true //关闭右击菜单显示
+    }
+});
+MathJax.Hub.Queue(["Typeset",MathJax.Hub,mathId]);
+</script>
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
 <body>
@@ -102,6 +121,24 @@ var _hmt = _hmt || [];
             <div class="left-time">
               <a href="javascript:;" onmouseover="this.children[0].style.borderLeft='8px solid rgb(255,90,90)'; this.children[1].style.backgroundColor='rgb(255,90,90)';this.children[1].children[0].children[0].style.color='white';" onmouseout="this.children[0].style.borderLeft='8px solid #f4f4f4'; this.children[1].style.backgroundColor='#f4f4f4';this.children[1].children[0].children[0].style.color='#555';">
                 <span class="righttime-san"></span><span class="righttime-main"><sapn class="timemain">
+                    <time class="post-date timefont" datetime="19-08-30">2019-08-30</time>
+                </sapn></span>
+              </a>
+            </div>
+            <div class="right-name">
+              <a href="/2019/08/30/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Blocal_planner.html" onmouseover="this.children[0].style.borderRight='8px solid rgb(154,133,255)'; this.children[1].style.backgroundColor='rgb(154,133,255)';this.children[1].children[0].style.color='white';this.children[1].children[0].style.fontWeight='bold';" onmouseout="this.children[0].style.borderRight='8px solid #f4f4f4'; this.children[1].style.backgroundColor='#f4f4f4';this.children[1].children[0].style.color='#555';this.children[1].children[0].style.fontWeight='normal';">
+                <span class="lefttime-san"></span>
+                <span class="lefttime-main">
+                  <sapn class="timemain">
+                    4 机器人导航 local_planner
+                  </sapn>
+                </span>
+              </a>
+            </div>
+          
+            <div class="left-time">
+              <a href="javascript:;" onmouseover="this.children[0].style.borderLeft='8px solid rgb(255,90,90)'; this.children[1].style.backgroundColor='rgb(255,90,90)';this.children[1].children[0].children[0].style.color='white';" onmouseout="this.children[0].style.borderLeft='8px solid #f4f4f4'; this.children[1].style.backgroundColor='#f4f4f4';this.children[1].children[0].children[0].style.color='#555';">
+                <span class="righttime-san"></span><span class="righttime-main"><sapn class="timemain">
                     <time class="post-date timefont" datetime="19-08-29">2019-08-29</time>
                 </sapn></span>
               </a>
@@ -156,6 +193,13 @@ var _hmt = _hmt || [];
         </li>
 
         <li  class="fadeInUp animated" id="media">
+          
+            <div class="timeANDname">
+              <a href="/2019/08/30/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Blocal_planner.html"><span class="timeANDname-san"></span><span class="timeANDname-main"><sapn class="timeANDnamemain">
+                  4 机器人导航 local_planner
+                  <time class="timeline-data" datetime="19-08-30">2019-08-30</time>
+              </sapn></span></a>
+            </div>
           
             <div class="timeANDname">
               <a href="/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html"><span class="timeANDname-san"></span><span class="timeANDname-main"><sapn class="timeANDnamemain">

@@ -1,0 +1,421 @@
+<!-- 博文的布局-Layout -->
+<!DOCTYPE html>
+<html>
+<head>
+<!-- 引入head标签 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-sclable=0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="description" content="这是一个初学博客的博主" />
+<meta name="keywords" content="Robot, Artificial Intelligence, Aviation, Software Safety" />
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/media.css">
+<link rel="stylesheet" href="/assets/css/animate.min.css">
+<link rel="stylesheet" href="/assets/css/pygments/pygments_default.css">
+<link rel="stylesheet" href="/assets/css/github-markdown.css">
+<!-- SNS-icon -->
+<script src="//at.alicdn.com/t/font_856428_y9z6nq7zf5.js"></script>
+<!-- share.css -->
+<link rel="stylesheet" href="/assets/css/share.min.css">
+<!-- font -->
+<link rel="stylesheet" href="/assets/css/font.css">
+<!-- <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Pacifico|Ubuntu|Roboto+Mono|Source+Sans+Pro" rel="stylesheet"> -->
+
+<!-- Favicon -->
+<link href="/assets/profile.jpeg" rel="shortcut icon" />
+<link href="/assets/profile.jpeg" rel="apple-touch-icon-precomposed" />
+<!-- Android Lolipop Theme Color -->
+<!-- <meta name="theme-color" content="#1464FB"> -->
+<title>4 机器人导航 local_planner</title>
+<!-- 百度统计 -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<!-- 谷歌分析 -->
+
+<script type="text/x-mathjax-config">
+var mathId = document.getElementById("post-content"); //选择公式识别范围
+MathJax.Hub.Config({
+    showProcessingMessages: false, //关闭js加载过程信息
+    messageStyle: "none", //不显示信息
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ], //行内公式选择$
+        displayMath: [ ["$$","$$"] ], //段内公式选择$$
+    },
+    "HTML-CSS": {
+        availableFonts: ["STIX","TeX"], //可选字体
+        showMathMenu: true //关闭右击菜单显示
+    }
+});
+MathJax.Hub.Queue(["Typeset",MathJax.Hub,mathId]);
+</script>
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<!-- Android Lolipop Theme Color -->
+<meta name="theme-color" content=" rgb(255,210,32) ">
+</head>
+<body>
+
+<!-- 顶部锚点 -->
+<a id="htmlup" name="htmlup"></a>
+<!-- 引入博文顶部选项 -->
+
+<header id="post-header" style="background-color:rgb(255,210,32);">
+  <div class="top-center">
+      <div class="logo">
+          <a href="/" title="my awesome webtitle" style="color: white;">Green's HomePage</a>
+      </div>
+      <nav class="top-nav">
+          <ul>
+              
+                <li><a href="/" style="color: white;">首页</a></li>
+              
+                <li><a href="/tags.html" style="color: white;">标签</a></li>
+              
+                <li><a href="/timeline.html" style="color: white;">时间线</a></li>
+              
+                <li><a href="/about.html" style="color: white;">关于博主</a></li>
+              
+                <li><a href="/friendLink.html" style="color: white;">友情链接</a></li>
+              
+          </ul>
+      </nav>
+      <div id="top-boot">
+        <a href="javascript:;" id="boot1" style="display:block;" onclick="document.getElementById('boot-area').style.display='block';document.getElementById('boot1').style.display='none';document.getElementById('boot2').style.display='block';"><img src="/assets/boot_white.png" alt=""></a>
+        <a href="javascript:;" id="boot2" style="display: none;" onclick="document.getElementById('boot-area').style.display='none';document.getElementById('boot1').style.display='block';document.getElementById('boot2').style.display='none';"><img src="/assets/boot_white.png" alt=""></a>
+      </div>
+  </div>
+
+</header>
+
+
+<!-- 引入移动下拉选项 -->
+<div id="boot-area">
+    <ul>
+        
+          <a href="/"><li>首页</li></a>
+        
+          <a href="/tags.html"><li>标签</li></a>
+        
+          <a href="/timeline.html"><li>时间线</li></a>
+        
+          <a href="/about.html"><li>关于博主</li></a>
+        
+          <a href="/friendLink.html"><li>友情链接</li></a>
+        
+    </ul>
+</div>
+
+<!-- 引入博文顶部样式 -->
+<!-- 版本一 垃圾 -->
+<!-- <div class="wow fadeIn top" data-wow-duration="3.5s" >
+    <span class="wow fadeInUp" data-wow-delay="0.2s">4 机器人导航 local_planner</span>
+    <span class="wow fadeInUp" data-wow-delay="0.4s"></span>
+    <span class="wow fadeInUp" data-wow-delay="0.4s"></span>
+    <span class="wow fadeInUp" data-wow-delay="0.6s">作者&nbsp;&nbsp;|&nbsp;&nbsp;Green</span>
+</div> -->
+
+<!-- 版本二 可切换页面 -->
+
+<div class="post-top" style="background-color:rgb(255,210,32);">
+  <!-- 页面宽度大于800px -->
+  <div class="left-area">
+    
+      <a href="javascript:;" class="btn bounceInLeft animated" onmouseover="showLeft();this.style.color='rgb(255,210,32)';" onmouseout="goneLeft();this.style.color='rgba(0,0,0,.2)';"><</a>
+      <div id="left-tab" style="display:none;"><span class="left-san"></span><span class="left-main" style="color:rgb(255,210,32);"><sapn class="main">没有上一页咯</sapn></span></div>
+    
+  </div>
+  <div class="post-titlearea">
+    <span class="wow fadeInUp" data-wow-delay="0.2s">4 机器人导航 local_planner</span>
+    <!-- <span class="wow fadeInUp" data-wow-delay="0.4s"></span> -->
+    <!-- <span class="wow fadeInUp" data-wow-delay="0.4s"></span> -->
+    <!-- <span class="wow fadeInUp" data-wow-delay="0.6s">作者&nbsp;&nbsp;|&nbsp;&nbsp;Green</span> -->
+  </div>
+  <div class="right-area">
+    
+      <a href="/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html" class="btn bounceInRight self-animated" onmouseover="showRight();this.style.color='rgb(255,210,32)';" onmouseout="goneRight();this.style.color='rgba(0,0,0,.2)';">></a>
+      <div id="right-tab" style="display:none;"><span class="right-san"></span><span class="right-main" style="color:rgb(255,210,32);"><sapn class="main">3 机器人导航 global_planner</sapn></span></div>
+    
+  </div>
+
+  <!-- 页面宽度小于800px -->
+  <div class="post-changearea">
+    
+      <a href="javascript:;" class="leftchange" style="border-right: 1px solid rgb(255,210,32);border-bottom: 2px solid rgb(255,210,32);"><span><br>没有上一篇咯</span></a>
+    
+    
+      <a href="/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html" class="rightchange" style="border-left: 1px solid rgb(255,210,32);border-bottom: 2px solid rgb(255,210,32);"><span>下一篇<br><br>3 机器人导航 global_planner</span></a>
+    
+  </div>
+</div>
+
+
+<div class="markdown-body fadeInUp animated">
+
+  
+
+  <!-- 文章内容 -->
+  <h1 id="local-planner">local planner</h1>
+
+<p>  我们先来回顾一下Navigation的框架，可以看出位于红框中的local_planner是move_base节点的一部分，输入包括来自global_planner的全局的规划路径、里程计信息以及local_costmap的信息，输出是速度控制指令，作为控制器的输入。</p>
+
+<figure align="center">
+  <img src="框架.png" width="75%" height="75%" />
+</figure>
+
+<h2 id="base_local_planner">base_local_planner</h2>
+
+<p>  局部规划一般是用base_local_planner包实现的，该包使用<strong>Trajectory Rollout</strong>和<strong>Dynamic Window approaches(DWA)</strong>算法，根据地图数据，通过算法搜索到达目标的多条路经，利用一些评价标准（是否会撞击障碍物，所需要的时间等等）选取最优的路径，并且计算所需要的实时速度和角度。</p>
+
+<h3 id="dwa算法">DWA算法</h3>
+
+<p>  这里有一张DWA算法的示意图，蓝色的方块表示机器人，红色表示障碍物，机器人前方的多条黑色虚线表示备选的路线（可以设置参数来调整虚线的数量，也可以设置参数来调整虚线的长度，虚线越多越长对计算资源的消耗越多，但也会得到更为精确的结果），DWA算法会对每条路线进行评分，最终选择得分最高的路线，而会导致碰撞发生的路线会被排除。</p>
+
+<figure align="center">
+  <img src="DWA.png" width="50%" height="50%" />
+</figure>
+
+<p>  Trajectory Rollout和DWA算法的主要思路如下：</p>
+
+<ol>
+  <li>采样机器人当前的状态（dx,dy,dtheta）；</li>
+  <li>针对每个采样的速度，计算机器人以该速度行驶一段时间后的状态，得出一条行驶的路线；</li>
+  <li>利用一些评价标准为多条路线打分；</li>
+  <li>根据打分，选择最优路径；</li>
+  <li>重复上面过程。</li>
+</ol>
+
+<p>  Trajectory Rollout和Dynamic Window Approach (DWA)两种方法，理论上来说分别对应base_local_planner和dwa_local_planner两个包，但其实dwa的大部分代码都放在了base_local_planner包里面。</p>
+
+<h3 id="类继承关系">类继承关系</h3>
+
+<p>  base_local_planner类继承图如图所示。</p>
+
+<figure align="center">
+  <img src="类继承图.png" width="80%" height="80%" />
+</figure>
+
+<ul>
+  <li><strong>TrajectoryPlanners</strong>（红框标出）实现了DWA 和Trajectory Rollout算法。</li>
+  <li><strong>TrajectorySampleGenerator</strong>产生一系列轨迹</li>
+  <li>然后<strong>TrajectoryCostFunction</strong>遍历轨迹打分</li>
+  <li><strong>TrajectorySearch</strong>找到最好的轨迹拿来给小车导航</li>
+  <li>由于小车不是一个质点，<strong>WorldModel</strong>会检查小车有没有碰到障碍物</li>
+</ul>
+
+<h2 id="teb_local_planner">teb_local_planner</h2>
+
+<p>  teb_local_planner也是local planner的一个插件。teb即Timed Elastic Band，基本思路是根据轨迹执行时间、避障、动力学约束（如最大速度和最大加速度的限制）等来优化机器人的轨迹。</p>
+
+<h3 id="teb算法">TEB算法</h3>
+
+<p>  对于二维路径的描述，有一个有趣的方法，叫做Elatic Band（橡皮筋）。简而言之，就是连接起始、目标点，并让这个路径可以变形，变形的条件就是将所有约束当做橡皮筋的外力。</p>
+
+<p>  经典的“elastic band”由n个的机器人位姿组成的序列描述$X_i=(x_i,y_i,\beta_i)^T$，其中$x_i$，$y_i$是机器人位置，$\beta_i$被定义为全局中机器人的方向。</p>
+
+<script type="math/tex; mode=display">Q=\{X_i\}_{i=0...n}</script>
+
+<p>  为了显示轨迹的运动学信息，我们在点与点之间定义运动时间Time。于是，这个方法就叫做<strong>Timed-Elastic-Band</strong>。</p>
+
+<p>  TEB在原有的基础上加入了时间间隔序列：</p>
+
+<script type="math/tex; mode=display">\tau=\{\Delta{T_i}\}_{i=0...n-1}</script>
+
+<p>  每个时间间隔表示机器人需要从当前位姿转换到序列$Q$中的下一个位姿所需要的时间。</p>
+
+<figure align="center">
+  <img src="TEB.png" width="40%" height="40%" />
+</figure>
+
+<p>  因此，TEB由上述两个序列组成。</p>
+
+<script type="math/tex; mode=display">B:=(Q,\tau)</script>
+
+<p>  TEB算法的<strong>目标函数</strong>主要包括：</p>
+
+<ol>
+  <li><strong>跟随全局路径+避开障碍物</strong>。跟随全局路径使得elastic bands靠近全局路径，而避障约束使得elastic bands远离障碍物。</li>
+  <li><strong>速度和加速度限制</strong>。这一条限制即简单的不等式约束。</li>
+  <li><strong>运动学限制</strong>。一般情况下机器人在平面运动只有两个自由度，其只能以朝向的方向直线运动或旋转。这种运动学约束使得机器人以有若干弧段组成的平滑的轨迹运动。对于某些机器人，会有最小转弯半径的约束（因为不能原地旋转）。</li>
+  <li><strong>其他限制</strong>。比如使时间间隔序列的平方和最小。</li>
+</ol>
+
+<p>  我们的目标是进行局部的路径规划：</p>
+
+<script type="math/tex; mode=display">f(B)=\sum_{k}\gamma_kf_k(B)</script>
+
+<script type="math/tex; mode=display">B^*=\arg\min_Bf(B)</script>
+
+<p>  $f(B)$是全局目标函数，它是考虑各种约束的目标函数的加权和，$B^*$是被优化的TEB序列结果，也就是我们需要的局部规划的路径。</p>
+
+<p>  这是一个复杂的多目标优化问题，虽然看似复杂，但是这就是一个<strong>bundle adjustment</strong>问题。我们可以将它描述成图，然后用图优化进行求解。</p>
+
+<figure align="center">
+  <img src="T1.png" width="60%" height="60%" />
+</figure>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>如图，这个图的节点(vertexs)是橡皮筋的状态（机器人姿态+时间）。
+</code></pre></div></div>
+
+<figure align="center">
+  <img src="T2.png" width="60%" height="60%" />
+</figure>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>图的边edges是我们自己定义的目标函数，这张图加入了速度约束。
+</code></pre></div></div>
+
+<figure align="center">
+  <img src="T3.png" width="60%" height="60%" />
+</figure>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>这张图加入了加速度约束。
+</code></pre></div></div>
+
+<figure align="center">
+  <img src="T4.png" width="60%" height="60%" />
+</figure>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>这张图加入了障碍物约束。
+
+求解的框架，可以使用g2o（A General Framework for Graph Optimization）。当然，节点和边的类型
+需要我们自己使用g2o中的模板定义。
+</code></pre></div></div>
+<h2 id="参考资料">参考资料</h2>
+
+<p>[1] http://wiki.ros.org/base_local_planner</p>
+
+<p>[2] https://www.leiphone.com/news/201612/0TCtaBOIcFOIBN69.html</p>
+
+  <!-- 引入share模块 -->
+  
+  <div class="social-share-wrapper">
+    <div class="social-share"></div>
+  </div>
+
+
+<!-- share.js -->
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+  socialShare('.social-share', {
+    sites: [
+      
+        'qq'
+        ,
+        
+      
+        'wechat'
+        ,
+        
+      
+        'weibo'
+        ,
+        
+      
+        'twitter'
+        ,
+        
+      
+        'facebook'
+        
+      
+    ],
+    wechatQrcodeTitle: "分享到微信朋友圈",
+    wechatQrcodeHelper: '期待在朋友圈见到这篇文章'
+  });
+</script>
+
+</div>
+
+<!-- 底部锚点 -->
+<a id="htmldown" name="htmldown"></a>
+<!-- 引入评论模块 -->
+
+
+
+    <section class="post-footer-item comment">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDI2OS8xMDgwNg=="></div>
+    </section>
+
+    <!-- 来必力City版安装代码 -->
+    <script type="text/javascript">
+       (function(d, s) {
+           var j, e = d.getElementsByTagName(s)[0];
+
+           if (typeof LivereTower === 'function') { return; }
+
+           j = d.createElement(s);
+           j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+           j.async = true;
+
+           e.parentNode.insertBefore(j, e);
+       })(document, 'script');
+    </script>
+    <noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+    <!-- City版安装代码已完成 -->
+
+
+
+
+
+<!-- 引入goto模块 -->
+<div class="bounceInRight animated go">
+  <a title="顶部切换页面" class="gototop" href="#htmlup" target="_self">
+    <div class="box" style="font-family:'ffad_matroregular';">
+        Top
+    </div>
+  </a>
+  <a title="底部有livere评论哦" class="gotobottom" href="#htmldown" target="_self">
+    <div class="box" style="font-family:'ffad_matroregular';">
+        Foot
+    </div>
+  </a>
+</div>
+
+<!-- 引入页面底部模块 -->
+<footer id="bottom">
+  <br>
+  <span>Green's HomePage ©
+  
+  
+    2018
+    -
+  
+  2019
+  <br>
+  Powered by <a href="https://www.jekyll.com.cn/">Jekyll</a> | <a href="https://github.com/xukimseven/HardCandy-Jekyll">HardCandy-Jekyll</a></span>
+</footer>
+
+
+<!-- 引用wow.js的动画效果 -->
+<script src="/assets/js/wow.js"></script>
+<script>
+    var wow = new WOW({
+        boxClass: 'wow',
+        animateClass: 'animated',
+        // offset: 600,
+        mobile: true,
+        live: true
+    });
+    wow.init();
+</script>
+<!-- 页面刷新回到顶部 -->
+<script>
+    window.onbeforeunload = function(){
+        //刷新后页面自动回到顶部
+        document.documentElement.scrollTop = 0;  //ie下
+        document.body.scrollTop = 0;  //非ie
+    }
+</script>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

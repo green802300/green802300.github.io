@@ -41,6 +41,25 @@ var _hmt = _hmt || [];
 
 <!-- 谷歌分析 -->
 
+<script type="text/x-mathjax-config">
+var mathId = document.getElementById("post-content"); //选择公式识别范围
+MathJax.Hub.Config({
+    showProcessingMessages: false, //关闭js加载过程信息
+    messageStyle: "none", //不显示信息
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ], //行内公式选择$
+        displayMath: [ ["$$","$$"] ], //段内公式选择$$
+    },
+    "HTML-CSS": {
+        availableFonts: ["STIX","TeX"], //可选字体
+        showMathMenu: true //关闭右击菜单显示
+    }
+});
+MathJax.Hub.Queue(["Typeset",MathJax.Hub,mathId]);
+</script>
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
 <body>
@@ -107,6 +126,8 @@ var _hmt = _hmt || [];
         
         <li>
             <span class="tag-name" id="navigation">「navigation」</span>
+            
+            <a class="tag-post" href="/2019/08/30/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Blocal_planner.html" title="4 机器人导航 local_planner">4 机器人导航 local_planner</a>
             
             <a class="tag-post" href="/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html" title="3 机器人导航 global_planner">3 机器人导航 global_planner</a>
             

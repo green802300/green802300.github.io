@@ -1,4 +1,133 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-08-29T16:25:30+08:00</updated><id>http://localhost:4000/</id><title type="html">Green’s HomePage</title><subtitle>这是一个初学博客的博主</subtitle><author><name>true</name></author><entry><title type="html">3 机器人导航 global_planner</title><link href="http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html" rel="alternate" type="text/html" title="3 机器人导航 global_planner" /><published>2019-08-29T00:00:00+08:00</published><updated>2019-08-29T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner</id><content type="html" xml:base="http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html">&lt;h1 id=&quot;global-planner&quot;&gt;global planner&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-08-30T13:07:50+08:00</updated><id>http://localhost:4000/</id><title type="html">Green’s HomePage</title><subtitle>这是一个初学博客的博主</subtitle><author><name>true</name></author><entry><title type="html">4 机器人导航 local_planner</title><link href="http://localhost:4000/2019/08/30/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Blocal_planner.html" rel="alternate" type="text/html" title="4 机器人导航 local_planner" /><published>2019-08-30T00:00:00+08:00</published><updated>2019-08-30T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/30/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Blocal_planner</id><content type="html" xml:base="http://localhost:4000/2019/08/30/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Blocal_planner.html">&lt;h1 id=&quot;local-planner&quot;&gt;local planner&lt;/h1&gt;
+
+&lt;p&gt;  我们先来回顾一下Navigation的框架，可以看出位于红框中的local_planner是move_base节点的一部分，输入包括来自global_planner的全局的规划路径、里程计信息以及local_costmap的信息，输出是速度控制指令，作为控制器的输入。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;框架.png&quot; width=&quot;75%&quot; height=&quot;75%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;base_local_planner&quot;&gt;base_local_planner&lt;/h2&gt;
+
+&lt;p&gt;  局部规划一般是用base_local_planner包实现的，该包使用&lt;strong&gt;Trajectory Rollout&lt;/strong&gt;和&lt;strong&gt;Dynamic Window approaches(DWA)&lt;/strong&gt;算法，根据地图数据，通过算法搜索到达目标的多条路经，利用一些评价标准（是否会撞击障碍物，所需要的时间等等）选取最优的路径，并且计算所需要的实时速度和角度。&lt;/p&gt;
+
+&lt;h3 id=&quot;dwa算法&quot;&gt;DWA算法&lt;/h3&gt;
+
+&lt;p&gt;  这里有一张DWA算法的示意图，蓝色的方块表示机器人，红色表示障碍物，机器人前方的多条黑色虚线表示备选的路线（可以设置参数来调整虚线的数量，也可以设置参数来调整虚线的长度，虚线越多越长对计算资源的消耗越多，但也会得到更为精确的结果），DWA算法会对每条路线进行评分，最终选择得分最高的路线，而会导致碰撞发生的路线会被排除。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;DWA.png&quot; width=&quot;50%&quot; height=&quot;50%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;  Trajectory Rollout和DWA算法的主要思路如下：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;采样机器人当前的状态（dx,dy,dtheta）；&lt;/li&gt;
+  &lt;li&gt;针对每个采样的速度，计算机器人以该速度行驶一段时间后的状态，得出一条行驶的路线；&lt;/li&gt;
+  &lt;li&gt;利用一些评价标准为多条路线打分；&lt;/li&gt;
+  &lt;li&gt;根据打分，选择最优路径；&lt;/li&gt;
+  &lt;li&gt;重复上面过程。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;  Trajectory Rollout和Dynamic Window Approach (DWA)两种方法，理论上来说分别对应base_local_planner和dwa_local_planner两个包，但其实dwa的大部分代码都放在了base_local_planner包里面。&lt;/p&gt;
+
+&lt;h3 id=&quot;类继承关系&quot;&gt;类继承关系&lt;/h3&gt;
+
+&lt;p&gt;  base_local_planner类继承图如图所示。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;类继承图.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;TrajectoryPlanners&lt;/strong&gt;（红框标出）实现了DWA 和Trajectory Rollout算法。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;TrajectorySampleGenerator&lt;/strong&gt;产生一系列轨迹&lt;/li&gt;
+  &lt;li&gt;然后&lt;strong&gt;TrajectoryCostFunction&lt;/strong&gt;遍历轨迹打分&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;TrajectorySearch&lt;/strong&gt;找到最好的轨迹拿来给小车导航&lt;/li&gt;
+  &lt;li&gt;由于小车不是一个质点，&lt;strong&gt;WorldModel&lt;/strong&gt;会检查小车有没有碰到障碍物&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;teb_local_planner&quot;&gt;teb_local_planner&lt;/h2&gt;
+
+&lt;p&gt;  teb_local_planner也是local planner的一个插件。teb即Timed Elastic Band，基本思路是根据轨迹执行时间、避障、动力学约束（如最大速度和最大加速度的限制）等来优化机器人的轨迹。&lt;/p&gt;
+
+&lt;h3 id=&quot;teb算法&quot;&gt;TEB算法&lt;/h3&gt;
+
+&lt;p&gt;  对于二维路径的描述，有一个有趣的方法，叫做Elatic Band（橡皮筋）。简而言之，就是连接起始、目标点，并让这个路径可以变形，变形的条件就是将所有约束当做橡皮筋的外力。&lt;/p&gt;
+
+&lt;p&gt;  经典的“elastic band”由n个的机器人位姿组成的序列描述$X_i=(x_i,y_i,\beta_i)^T$，其中$x_i$，$y_i$是机器人位置，$\beta_i$被定义为全局中机器人的方向。&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Q=\{X_i\}_{i=0...n}&lt;/script&gt;
+
+&lt;p&gt;  为了显示轨迹的运动学信息，我们在点与点之间定义运动时间Time。于是，这个方法就叫做&lt;strong&gt;Timed-Elastic-Band&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;  TEB在原有的基础上加入了时间间隔序列：&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\tau=\{\Delta{T_i}\}_{i=0...n-1}&lt;/script&gt;
+
+&lt;p&gt;  每个时间间隔表示机器人需要从当前位姿转换到序列$Q$中的下一个位姿所需要的时间。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;TEB.png&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;  因此，TEB由上述两个序列组成。&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;B:=(Q,\tau)&lt;/script&gt;
+
+&lt;p&gt;  TEB算法的&lt;strong&gt;目标函数&lt;/strong&gt;主要包括：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;跟随全局路径+避开障碍物&lt;/strong&gt;。跟随全局路径使得elastic bands靠近全局路径，而避障约束使得elastic bands远离障碍物。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;速度和加速度限制&lt;/strong&gt;。这一条限制即简单的不等式约束。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;运动学限制&lt;/strong&gt;。一般情况下机器人在平面运动只有两个自由度，其只能以朝向的方向直线运动或旋转。这种运动学约束使得机器人以有若干弧段组成的平滑的轨迹运动。对于某些机器人，会有最小转弯半径的约束（因为不能原地旋转）。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;其他限制&lt;/strong&gt;。比如使时间间隔序列的平方和最小。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;  我们的目标是进行局部的路径规划：&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;f(B)=\sum_{k}\gamma_kf_k(B)&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;B^*=\arg\min_Bf(B)&lt;/script&gt;
+
+&lt;p&gt;  $f(B)$是全局目标函数，它是考虑各种约束的目标函数的加权和，$B^*$是被优化的TEB序列结果，也就是我们需要的局部规划的路径。&lt;/p&gt;
+
+&lt;p&gt;  这是一个复杂的多目标优化问题，虽然看似复杂，但是这就是一个&lt;strong&gt;bundle adjustment&lt;/strong&gt;问题。我们可以将它描述成图，然后用图优化进行求解。&lt;/p&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;T1.png&quot; width=&quot;60%&quot; height=&quot;60%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;如图，这个图的节点(vertexs)是橡皮筋的状态（机器人姿态+时间）。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;T2.png&quot; width=&quot;60%&quot; height=&quot;60%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;图的边edges是我们自己定义的目标函数，这张图加入了速度约束。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;T3.png&quot; width=&quot;60%&quot; height=&quot;60%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;这张图加入了加速度约束。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;figure align=&quot;center&quot;&gt;
+  &lt;img src=&quot;T4.png&quot; width=&quot;60%&quot; height=&quot;60%&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;这张图加入了障碍物约束。
+
+求解的框架，可以使用g2o（A General Framework for Graph Optimization）。当然，节点和边的类型
+需要我们自己使用g2o中的模板定义。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;p&gt;[1] http://wiki.ros.org/base_local_planner&lt;/p&gt;
+
+&lt;p&gt;[2] https://www.leiphone.com/news/201612/0TCtaBOIcFOIBN69.html&lt;/p&gt;</content><author><name>Green</name></author><category term="navigation" /><summary type="html">local planner   我们先来回顾一下Navigation的框架，可以看出位于红框中的local_planner是move_base节点的一部分，输入包括来自global_planner的全局的规划路径、里程计信息以及local_costmap的信息，输出是速度控制指令，作为控制器的输入。 base_local_planner   局部规划一般是用base_local_planner包实现的，该包使用Trajectory Rollout和Dynamic Window approaches(DWA)算法，根据地图数据，通过算法搜索到达目标的多条路经，利用一些评价标准（是否会撞击障碍物，所需要的时间等等）选取最优的路径，并且计算所需要的实时速度和角度。 DWA算法   这里有一张DWA算法的示意图，蓝色的方块表示机器人，红色表示障碍物，机器人前方的多条黑色虚线表示备选的路线（可以设置参数来调整虚线的数量，也可以设置参数来调整虚线的长度，虚线越多越长对计算资源的消耗越多，但也会得到更为精确的结果），DWA算法会对每条路线进行评分，最终选择得分最高的路线，而会导致碰撞发生的路线会被排除。   Trajectory Rollout和DWA算法的主要思路如下： 采样机器人当前的状态（dx,dy,dtheta）； 针对每个采样的速度，计算机器人以该速度行驶一段时间后的状态，得出一条行驶的路线； 利用一些评价标准为多条路线打分； 根据打分，选择最优路径； 重复上面过程。   Trajectory Rollout和Dynamic Window Approach (DWA)两种方法，理论上来说分别对应base_local_planner和dwa_local_planner两个包，但其实dwa的大部分代码都放在了base_local_planner包里面。 类继承关系   base_local_planner类继承图如图所示。 TrajectoryPlanners（红框标出）实现了DWA 和Trajectory Rollout算法。 TrajectorySampleGenerator产生一系列轨迹 然后TrajectoryCostFunction遍历轨迹打分 TrajectorySearch找到最好的轨迹拿来给小车导航 由于小车不是一个质点，WorldModel会检查小车有没有碰到障碍物 teb_local_planner   teb_local_planner也是local planner的一个插件。teb即Timed Elastic Band，基本思路是根据轨迹执行时间、避障、动力学约束（如最大速度和最大加速度的限制）等来优化机器人的轨迹。 TEB算法   对于二维路径的描述，有一个有趣的方法，叫做Elatic Band（橡皮筋）。简而言之，就是连接起始、目标点，并让这个路径可以变形，变形的条件就是将所有约束当做橡皮筋的外力。   经典的“elastic band”由n个的机器人位姿组成的序列描述$X_i=(x_i,y_i,\beta_i)^T$，其中$x_i$，$y_i$是机器人位置，$\beta_i$被定义为全局中机器人的方向。   为了显示轨迹的运动学信息，我们在点与点之间定义运动时间Time。于是，这个方法就叫做Timed-Elastic-Band。   TEB在原有的基础上加入了时间间隔序列：   每个时间间隔表示机器人需要从当前位姿转换到序列$Q$中的下一个位姿所需要的时间。   因此，TEB由上述两个序列组成。   TEB算法的目标函数主要包括： 跟随全局路径+避开障碍物。跟随全局路径使得elastic bands靠近全局路径，而避障约束使得elastic bands远离障碍物。 速度和加速度限制。这一条限制即简单的不等式约束。 运动学限制。一般情况下机器人在平面运动只有两个自由度，其只能以朝向的方向直线运动或旋转。这种运动学约束使得机器人以有若干弧段组成的平滑的轨迹运动。对于某些机器人，会有最小转弯半径的约束（因为不能原地旋转）。 其他限制。比如使时间间隔序列的平方和最小。   我们的目标是进行局部的路径规划：   $f(B)$是全局目标函数，它是考虑各种约束的目标函数的加权和，$B^*$是被优化的TEB序列结果，也就是我们需要的局部规划的路径。   这是一个复杂的多目标优化问题，虽然看似复杂，但是这就是一个bundle adjustment问题。我们可以将它描述成图，然后用图优化进行求解。 如图，这个图的节点(vertexs)是橡皮筋的状态（机器人姿态+时间）。 图的边edges是我们自己定义的目标函数，这张图加入了速度约束。 这张图加入了加速度约束。 这张图加入了障碍物约束。 求解的框架，可以使用g2o（A General Framework for Graph Optimization）。当然，节点和边的类型 需要我们自己使用g2o中的模板定义。 参考资料 [1] http://wiki.ros.org/base_local_planner [2] https://www.leiphone.com/news/201612/0TCtaBOIcFOIBN69.html</summary></entry><entry><title type="html">3 机器人导航 global_planner</title><link href="http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html" rel="alternate" type="text/html" title="3 机器人导航 global_planner" /><published>2019-08-29T00:00:00+08:00</published><updated>2019-08-29T00:00:00+08:00</updated><id>http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner</id><content type="html" xml:base="http://localhost:4000/2019/08/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%BC%E8%88%AA%E4%B9%8Bglobal_planner.html">&lt;h1 id=&quot;global-planner&quot;&gt;global planner&lt;/h1&gt;
 
 &lt;p&gt;  在对move_base中的全局规划进行介绍之前，我们先来回顾一下Navigation的框架，可以看出位于红框中的global_planner是move_base节点的一部分，输入是目标位置以及global_costmap的信息，输出是全局的规划路径，作为local_planner的输入。&lt;/p&gt;
 
